@@ -4,3 +4,4 @@ metadata:
   name: probes-microservices-config-map
 data:
   configServerHost: config-server
+  timeZone: GMT+2

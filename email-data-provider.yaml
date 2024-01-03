@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: email-data-provider
+spec:
+  selector:
+    matchLabels:
+      app: email-data-provider
+  template:
+    metadata:
+      labels:
+        app: email-data-provider
+    spec:
+      containers:
+      - name: email-data-provider
+        image: yuragranovsky/probes-email-data-provider
+        resources:
+          limits:
+            memory: "300Mi"
+            cpu: "250m"
+        env:
+        - name: POSTGRESQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name:  probes-microservices-secret
+              key:   postgresPassword
+        - name: CONFIG_SERVER_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: probes-microservices-config-map
+              key:  configServerHost
+        - name: TZ
+          valueFrom:
+            configMapKeyRef:
+              name: probes-microservices-config-map
+              key: timeZone            
+        ports:
+        - containerPort: 8080
+
+---  
+apiVersion: v1
+kind: Service
+metadata:
+  name: email-data-provider
+spec:
+  selector:
+    app: email-data-provider
+  ports:
+  - port: 8080
+    targetPort: 8080
+      
